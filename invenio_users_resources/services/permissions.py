@@ -13,6 +13,7 @@ from invenio_records_permissions.generators import (
     AdminAction,
     AnyUser,
     AuthenticatedUser,
+    DisableIfReadOnly,
     SystemProcess,
 )
 
@@ -26,15 +27,15 @@ UserManager = AdminAction(user_management_action)
 class UsersPermissionPolicy(BasePermissionPolicy):
     """Permission policy for users and user groups."""
 
-    can_create = [SystemProcess()]
+    can_create = [SystemProcess(), DisableIfReadOnly()]
     can_read = [
         UserManager,
         IfPublicUser(then_=[AnyUser()], else_=[Self()]),
         SystemProcess(),
     ]
     can_search = [AuthenticatedUser(), SystemProcess()]
-    can_update = [SystemProcess()]
-    can_delete = [SystemProcess()]
+    can_update = [SystemProcess(), DisableIfReadOnly()]
+    can_delete = [SystemProcess(), DisableIfReadOnly()]
 
     can_read_email = [
         UserManager,
@@ -44,7 +45,7 @@ class UsersPermissionPolicy(BasePermissionPolicy):
     can_read_details = [UserManager, Self(), SystemProcess()]
 
     # Moderation permissions
-    can_manage = [UserManager, SystemProcess()]
+    can_manage = [UserManager, SystemProcess(), DisableIfReadOnly()]
     can_search_all = [UserManager, SystemProcess()]
     can_read_system_details = [UserManager, SystemProcess()]
     can_impersonate = [UserManager, SystemProcess()]
@@ -53,21 +54,21 @@ class UsersPermissionPolicy(BasePermissionPolicy):
 class GroupsPermissionPolicy(BasePermissionPolicy):
     """Permission policy for users and user groups."""
 
-    can_create = [SystemProcess()]
+    can_create = [SystemProcess(), DisableIfReadOnly()]
     can_read = [
         IfGroupNotManaged([AuthenticatedUser()], [UserManager]),
         SystemProcess(),
     ]
     can_search = [AuthenticatedUser(), SystemProcess()]
-    can_update = [SystemProcess()]
-    can_delete = [SystemProcess()]
+    can_update = [SystemProcess(), DisableIfReadOnly()]
+    can_delete = [SystemProcess(), DisableIfReadOnly()]
 
 
 class DomainPermissionPolicy(BasePermissionPolicy):
     """Permission policy for users and user groups."""
 
-    can_create = [UserManager, SystemProcess()]
+    can_create = [UserManager, SystemProcess(), DisableIfReadOnly()]
     can_read = [UserManager, SystemProcess()]
     can_search = [UserManager, SystemProcess()]
-    can_update = [UserManager, SystemProcess()]
-    can_delete = [UserManager, SystemProcess()]
+    can_update = [UserManager, SystemProcess(), DisableIfReadOnly()]
+    can_delete = [UserManager, SystemProcess(), DisableIfReadOnly()]
